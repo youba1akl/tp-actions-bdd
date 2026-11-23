@@ -1,4 +1,4 @@
-pytest import
+import pytest
 
 from students import add_student, average_grade, get_connection, get_student
 
