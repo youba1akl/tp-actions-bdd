@@ -3,18 +3,111 @@ name: CI
 on: [push, pull_request]
 
 jobs:
+
+  #===============
+  # Job 1: Python
+  #===============
   python:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Préparer la base de données
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup database
         run: bash db/setup.sh
-      - uses: actions/setup-python@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Installer les dépendances
+
+      - name: Install dependencies
         run: pip install -r requirements.txt
         working-directory: python-app
-      - name: Lancer les tests
+
+      - name: Run tests
         run: pytest -v
         working-directory: python-app
+
+  #=============
+  # Job 2: Java
+  #============= 
+  java:
+  
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Chechout repository
+        uses: actions/checkout@04
+      
+      - names: Setup database
+        run: bash sb/setup.sh
+        
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          
+      - name: Build and test
+        run: mvn -B package
+        working-directory: java-app
+        
+  
+  #===================
+  # Job 3: JavaScript
+  #===================
+  node:
+  
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Chechout repository
+        uses: actions/checkout@04
+      
+      - names: Setup database
+        run: bash sb/setup.sh
+        
+      - name: Setup node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          
+      - name: Install dependencies
+        run: npm ci
+        working-directory: node-app
+        
+      - name: Run tests
+        run: npm test
+        working-directory: node-app
+        
+  
+  #=============
+  # Job 4: PHP
+  #=============
+  node:
+  
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Chechout repository
+        uses: actions/checkout@04
+      
+      - names: Setup database
+        run: bash sb/setup.sh
+        
+      - name: Setup php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: pdo, pdo_pgsql
+          
+      - name: Install dependencies
+        run: composer install --no-interaction
+        working-directory: php-app
+        
+      - name: Run tests
+        run: vendor/bin/phpunit tests
+        working-directory: php-app
+        
